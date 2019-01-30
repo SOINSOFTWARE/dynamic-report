@@ -12,20 +12,20 @@ import net.sf.dynamicreports.report.exception.DRException;
 
 public class PdfGenerator {
 	
-	private final String reportPathName;
+	private final File compiledReport;
 	private final String pdfFileName;
 	
-	public PdfGenerator(final String reportPathName, final String pdfFileName) {
-		this.reportPathName = reportPathName;
+	public PdfGenerator(final File compiledReport, final String pdfFileName) {
+		this.compiledReport = compiledReport;
 		this.pdfFileName = pdfFileName;
 	}
 	
-	public String generate(Map<String, Object> parameters, Collection<?> dataSource) {
+	public String generate(Map<String, Object> parameters, Collection<?> dataSource) throws GeneratorException {
 		JasperReportBuilder report = DynamicReports.report();
 		try {
-			report.setTemplateDesign(new File(reportPathName));
+			report.setTemplateDesign(compiledReport);
 			report.setParameters(parameters).setDataSource(dataSource);
-			File file = File.createTempFile(pdfFileName, "pdf");
+			File file = File.createTempFile(pdfFileName, ".pdf");
 			report.toPdf(new FileOutputStream(file));
 			return file.getAbsolutePath();
 		} catch (DRException | IOException ex) {
